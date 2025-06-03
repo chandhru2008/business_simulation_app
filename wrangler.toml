@@ -10,5 +10,5 @@ binding = "ASSETS"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "random_id"
-database_id = "10183848-4cc7-4198-b8c7-1374015ab09c"
+database_name = "business_simulation_app"
+database_id = "66875ae5-0c0b-48c3-9b0f-2e16950a1bb5"
