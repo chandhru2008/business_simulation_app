@@ -201,6 +201,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   register: (name: string, email: string, password: string) => Promise<void>;
+  setError : (error : string | null) => void;
 }
 
 // Create auth context
@@ -210,7 +211,8 @@ const AuthContext = createContext<AuthContextType>({
   error: null,
   login: async () => { },
   logout: () => { },
-  register: async () => { }
+  register: async () => { },
+  setError : ()=> {}
 });
 
 // Auth provider component
@@ -387,7 +389,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     error,
     login,
     logout,
-    register
+    register,
+    setError
   };
 
   return (

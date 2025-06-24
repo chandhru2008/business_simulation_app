@@ -4,7 +4,7 @@ import { useDecisionSubmission } from '../simulation/use-decision-submission';
 import { useSimulationData } from '../simulation/use-simulation-data';
 
 export function Dashboard() {
-  const { state, userCompany, companyProducts, advancePeriod, loading, error } = useSimulation();
+  const {  userCompany, companyProducts, advancePeriod, loading, error } = useSimulation();
   const { getCompanyPerformance, getMarketConditions, getMarketEvents, getCurrentPeriod } = useSimulationData();
   const { submitProductDevelopment, submitProduction, submitMarketing, submitPricing } = useDecisionSubmission();
   
@@ -44,6 +44,7 @@ export function Dashboard() {
   };
   
   // Handle new product development
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleNewProduct = (data: any) => {
     submitProductDevelopment({
       action: 'new_product',
@@ -78,10 +79,10 @@ export function Dashboard() {
   }
   
   return (
-    <div className="p-6">
+    <div className="p-6 text-black">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold">{userCompany.name}</h1>
+          <h1 className="text-2xl font-bold ">{userCompany.name}</h1>
           <p className="text-gray-600">Period {currentPeriod}</p>
         </div>
         <button

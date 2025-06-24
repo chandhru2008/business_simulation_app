@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getDB } from "@/lib/get-db";
 import jwt from "jsonwebtoken";
 import { NextRequest, NextResponse } from "next/server";
@@ -13,7 +14,7 @@ export async function GET(req: NextRequest) {
     }
     const decoded: any = jwt.verify(token.value, process.env.JWT_SECRETE!)
     const db = await getDB();
-    console.log(decoded)
+    console.log('deocded in routes : ', decoded)
     const user = await db.getUserByEmail(decoded.email)
     console.log('user', user)
     return NextResponse.json(user)
@@ -21,5 +22,4 @@ export async function GET(req: NextRequest) {
     console.log(e);
     return NextResponse.json(e);
   }
-
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB } from '@/lib/get-db'; // This is safe to use here
 import * as bcrypt from 'bcryptjs';
@@ -14,15 +15,11 @@ export async function POST(req: NextRequest) {
 
         const db = await getDB();
 
-        console.log('namme : ' , name);
-        console.log('email : ', email);
-        console.log('password : ', password);
-
         const existingUser = await db.getUserByEmail(email);
 
         console.log(existingUser);
 
-        
+
         if (existingUser) {
             return NextResponse.json({ message: 'Email already in use' }, { status: 409 });
         }
@@ -39,9 +36,7 @@ export async function POST(req: NextRequest) {
             updatedAt: now,
         };
 
-      const id =   await db.createUser(user);
-
-      console.log('Id : ', id);
+        await db.createUser(user);
 
         const encrypt = {
             id: user.id,
@@ -56,8 +51,6 @@ export async function POST(req: NextRequest) {
             path: '/',
             secure: true
         })
-
-        console.log('Token : ', token)
 
         return NextResponse.json({
             id: user.id,
