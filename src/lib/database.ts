@@ -1,73 +1,94 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { D1Database } from '@cloudflare/workers-types';
 
 export interface DatabaseService {
   // Simulation operations
-  getSimulation(id: string): Promise<any>;
+  getSimulationById(id: string): Promise<any>;
+  getAllSimulations(): Promise<any>
   createSimulation(simulation: any): Promise<string>;
   updateSimulation(id: string, simulation: any): Promise<void>;
-  
+
   // Company operations
   getCompany(id: string): Promise<any>;
   getCompaniesBySimulation(simulationId: string): Promise<any[]>;
   createCompany(company: any): Promise<string>;
   updateCompany(id: string, company: any): Promise<void>;
-  
+
   // Product operations
   getProduct(id: string): Promise<any>;
   getProductsByCompany(companyId: string): Promise<any[]>;
   createProduct(product: any): Promise<string>;
   updateProduct(id: string, product: any): Promise<void>;
-  
+
   // Decision operations
   getDecision(id: string): Promise<any>;
   getDecisionsByCompany(companyId: string, period?: number): Promise<any[]>;
   createDecision(decision: any): Promise<string>;
   updateDecision(id: string, decision: any): Promise<void>;
-  
+
   // Market conditions operations
   getMarketConditions(simulationId: string, period: number): Promise<any>;
   createMarketConditions(marketConditions: any): Promise<string>;
-  
+
   // Performance results operations
   getPerformanceResults(companyId: string, period: number): Promise<any>;
   getPerformanceHistory(companyId: string): Promise<any[]>;
   createPerformanceResults(results: any): Promise<string>;
-  
+
   // Product performance operations
   getProductPerformance(productId: string, period: number): Promise<any>;
   getProductPerformanceHistory(productId: string): Promise<any[]>;
   createProductPerformance(performance: any): Promise<string>;
-  
+
   // Event operations
   getEvents(simulationId: string, period?: number): Promise<any[]>;
   createEvent(event: any): Promise<string>;
-  
+
   // User operations
   getUser(id: string): Promise<any>;
   getUserByEmail(email: string): Promise<any>;
   createUser(user: any): Promise<string>;
   updateUser(id: string, user: any): Promise<void>;
+  getSimulationIdByUserId(userId: string): Promise<void>;
 }
 
 export class D1DatabaseService implements DatabaseService {
   private db: D1Database;
-  
+
   constructor(db: D1Database) {
     this.db = db;
   }
-  
+
   // Simulation operations
-  async getSimulation(id: string): Promise<any> {
+  async getSimulationById(id: string): Promise<any> {
     const result = await this.db.prepare(
       'SELECT * FROM simulations WHERE id = ?'
     ).bind(id).first();
-    
+    console.log(result)
     return result;
   }
-  
+
+  async getSimulationIdByUserId(userId: string): Promise<any> {
+
+    const result = await this.db.prepare(
+      'SELECT * FROM simulations WHERE created_by = ?'
+    ).bind(userId).all();
+
+    return result.results;
+  }
+
+  async getAllSimulations(): Promise<any> {
+    const result = this.db.prepare(
+      'SELECT * FROM simulations'
+    ).all()
+    console.log(result);
+    return result;
+  }
+
+
   async createSimulation(simulation: any): Promise<string> {
     const id = simulation.id || `sim_${Date.now()}`;
-    
+
     await this.db.prepare(
       `INSERT INTO simulations (
         id, name, description, config, current_period, status, created_by, created_at, updated_at
@@ -79,14 +100,15 @@ export class D1DatabaseService implements DatabaseService {
       simulation.config,
       simulation.currentPeriod,
       simulation.status,
-      simulation.createdBy,
+      simulation.created_by,
       simulation.createdAt,
       simulation.updatedAt
     ).run();
-    
+
+    console.log('id', id);
     return id;
   }
-  
+
   async updateSimulation(id: string, simulation: any): Promise<void> {
     await this.db.prepare(
       `UPDATE simulations SET 
@@ -107,27 +129,27 @@ export class D1DatabaseService implements DatabaseService {
       id
     ).run();
   }
-  
+
   // Company operations
   async getCompany(id: string): Promise<any> {
     const result = await this.db.prepare(
       'SELECT * FROM companies WHERE id = ?'
     ).bind(id).first();
-    
+
     return result;
   }
-  
+
   async getCompaniesBySimulation(simulationId: string): Promise<any[]> {
     const result = await this.db.prepare(
       'SELECT * FROM companies WHERE simulation_id = ?'
     ).bind(simulationId).all();
-    
+
     return result.results;
   }
-  
+
   async createCompany(company: any): Promise<string> {
     const id = company.id || `company_${Date.now()}`;
-    
+
     await this.db.prepare(
       `INSERT INTO companies (
         id, simulation_id, user_id, name, description, logo_url, cash_balance, 
@@ -150,10 +172,10 @@ export class D1DatabaseService implements DatabaseService {
       company.createdAt,
       company.updatedAt
     ).run();
-    
+
     return id;
   }
-  
+
   async updateCompany(id: string, company: any): Promise<void> {
     await this.db.prepare(
       `UPDATE companies SET 
@@ -182,27 +204,27 @@ export class D1DatabaseService implements DatabaseService {
       id
     ).run();
   }
-  
+
   // Product operations
   async getProduct(id: string): Promise<any> {
     const result = await this.db.prepare(
       'SELECT * FROM products WHERE id = ?'
     ).bind(id).first();
-    
+
     return result;
   }
-  
+
   async getProductsByCompany(companyId: string): Promise<any[]> {
     const result = await this.db.prepare(
       'SELECT * FROM products WHERE company_id = ?'
     ).bind(companyId).all();
-    
+
     return result.results;
   }
-  
+
   async createProduct(product: any): Promise<string> {
     const id = product.id || `product_${Date.now()}`;
-    
+
     await this.db.prepare(
       `INSERT INTO products (
         id, company_id, name, description, category, quality_rating, 
@@ -232,10 +254,10 @@ export class D1DatabaseService implements DatabaseService {
       product.createdAt,
       product.updatedAt
     ).run();
-    
+
     return id;
   }
-  
+
   async updateProduct(id: string, product: any): Promise<void> {
     await this.db.prepare(
       `UPDATE products SET 
@@ -278,33 +300,33 @@ export class D1DatabaseService implements DatabaseService {
       id
     ).run();
   }
-  
+
   // Decision operations
   async getDecision(id: string): Promise<any> {
     const result = await this.db.prepare(
       'SELECT * FROM decisions WHERE id = ?'
     ).bind(id).first();
-    
+
     return result;
   }
-  
+
   async getDecisionsByCompany(companyId: string, period?: number): Promise<any[]> {
     let query = 'SELECT * FROM decisions WHERE company_id = ?';
     let params = [companyId];
-    
+
     if (period !== undefined) {
       query += ' AND period = ?';
       params.push(period);
     }
-    
+
     const result = await this.db.prepare(query).bind(...params).all();
-    
+
     return result.results;
   }
-  
+
   async createDecision(decision: any): Promise<string> {
     const id = decision.id || `decision_${Date.now()}`;
-    
+
     await this.db.prepare(
       `INSERT INTO decisions (
         id, company_id, period, type, data, submitted_at, processed, processed_at
@@ -319,10 +341,10 @@ export class D1DatabaseService implements DatabaseService {
       decision.processed ? 1 : 0,
       decision.processedAt
     ).run();
-    
+
     return id;
   }
-  
+
   async updateDecision(id: string, decision: any): Promise<void> {
     await this.db.prepare(
       `UPDATE decisions SET 
@@ -335,19 +357,19 @@ export class D1DatabaseService implements DatabaseService {
       id
     ).run();
   }
-  
+
   // Market conditions operations
   async getMarketConditions(simulationId: string, period: number): Promise<any> {
     const result = await this.db.prepare(
       'SELECT * FROM market_conditions WHERE simulation_id = ? AND period = ?'
     ).bind(simulationId, period).first();
-    
+
     return result;
   }
-  
+
   async createMarketConditions(marketConditions: any): Promise<string> {
     const id = marketConditions.id || `market_${Date.now()}`;
-    
+
     await this.db.prepare(
       `INSERT INTO market_conditions (
         id, simulation_id, period, total_market_size, segment_distribution, 
@@ -367,30 +389,30 @@ export class D1DatabaseService implements DatabaseService {
       marketConditions.data,
       marketConditions.createdAt
     ).run();
-    
+
     return id;
   }
-  
+
   // Performance results operations
   async getPerformanceResults(companyId: string, period: number): Promise<any> {
     const result = await this.db.prepare(
       'SELECT * FROM performance_results WHERE company_id = ? AND period = ?'
     ).bind(companyId, period).first();
-    
+
     return result;
   }
-  
+
   async getPerformanceHistory(companyId: string): Promise<any[]> {
     const result = await this.db.prepare(
       'SELECT * FROM performance_results WHERE company_id = ? ORDER BY period ASC'
     ).bind(companyId).all();
-    
+
     return result.results;
   }
-  
+
   async createPerformanceResults(results: any): Promise<string> {
     const id = results.id || `perf_${Date.now()}`;
-    
+
     await this.db.prepare(
       `INSERT INTO performance_results (
         id, company_id, period, revenue, costs, profit, market_share, 
@@ -416,30 +438,30 @@ export class D1DatabaseService implements DatabaseService {
       results.data,
       results.createdAt
     ).run();
-    
+
     return id;
   }
-  
+
   // Product performance operations
   async getProductPerformance(productId: string, period: number): Promise<any> {
     const result = await this.db.prepare(
       'SELECT * FROM product_performance WHERE product_id = ? AND period = ?'
     ).bind(productId, period).first();
-    
+
     return result;
   }
-  
+
   async getProductPerformanceHistory(productId: string): Promise<any[]> {
     const result = await this.db.prepare(
       'SELECT * FROM product_performance WHERE product_id = ? ORDER BY period ASC'
     ).bind(productId).all();
-    
+
     return result.results;
   }
-  
+
   async createProductPerformance(performance: any): Promise<string> {
     const id = performance.id || `prod_perf_${Date.now()}`;
-    
+
     await this.db.prepare(
       `INSERT INTO product_performance (
         id, product_id, period, sales_volume, revenue, costs, 
@@ -458,28 +480,28 @@ export class D1DatabaseService implements DatabaseService {
       performance.data,
       performance.createdAt
     ).run();
-    
+
     return id;
   }
-  
+
   // Event operations
   async getEvents(simulationId: string, period?: number): Promise<any[]> {
     let query = 'SELECT * FROM events WHERE simulation_id = ?';
     let params = [simulationId];
-    
+
     if (period !== undefined) {
       query += ' AND period = ?';
       params.push(period);
     }
-    
+
     const result = await this.db.prepare(query).bind(...params).all();
-    
+
     return result.results;
   }
-  
+
   async createEvent(event: any): Promise<string> {
     const id = event.id || `event_${Date.now()}`;
-    
+
     await this.db.prepare(
       `INSERT INTO events (
         id, simulation_id, period, type, name, description, 
@@ -498,30 +520,30 @@ export class D1DatabaseService implements DatabaseService {
       event.data,
       event.createdAt
     ).run();
-    
+
     return id;
   }
-  
+
   // User operations
   async getUser(id: string): Promise<any> {
     const result = await this.db.prepare(
       'SELECT * FROM users WHERE id = ?'
     ).bind(id).first();
-    
+
     return result;
   }
-  
+
   async getUserByEmail(email: string): Promise<any> {
     const result = await this.db.prepare(
       'SELECT * FROM users WHERE email = ?'
     ).bind(email).first();
-    
+
     return result;
   }
-  
+
   async createUser(user: any): Promise<string> {
     const id = user.id || `user_${Date.now()}`;
-    
+
     await this.db.prepare(
       `INSERT INTO users (
         id, name, email, password_hash, role, created_at, updated_at
@@ -535,10 +557,10 @@ export class D1DatabaseService implements DatabaseService {
       user.createdAt,
       user.updatedAt
     ).run();
-    
+
     return id;
   }
-  
+
   async updateUser(id: string, user: any): Promise<void> {
     await this.db.prepare(
       `UPDATE users SET 
@@ -561,6 +583,7 @@ export class D1DatabaseService implements DatabaseService {
 
 // Create a mock database service for development
 export class MockDatabaseService implements DatabaseService {
+
   private simulations: Map<string, any> = new Map();
   private companies: Map<string, any> = new Map();
   private products: Map<string, any> = new Map();
@@ -570,110 +593,112 @@ export class MockDatabaseService implements DatabaseService {
   private productPerformance: Map<string, any> = new Map();
   private events: Map<string, any> = new Map();
   private users: Map<string, any> = new Map();
-  
+
   // Simulation operations
   async getSimulation(id: string): Promise<any> {
     return this.simulations.get(id) || null;
   }
-  
+
+
+
   async createSimulation(simulation: any): Promise<string> {
     const id = simulation.id || `sim_${Date.now()}`;
     simulation.id = id;
     this.simulations.set(id, simulation);
     return id;
   }
-  
+
   async updateSimulation(id: string, simulation: any): Promise<void> {
     const existing = this.simulations.get(id);
     if (!existing) return;
-    
+
     this.simulations.set(id, { ...existing, ...simulation });
   }
-  
+
   // Company operations
   async getCompany(id: string): Promise<any> {
     return this.companies.get(id) || null;
   }
-  
+
   async getCompaniesBySimulation(simulationId: string): Promise<any[]> {
     return Array.from(this.companies.values())
       .filter(company => company.simulationId === simulationId);
   }
-  
+
   async createCompany(company: any): Promise<string> {
     const id = company.id || `company_${Date.now()}`;
     company.id = id;
     this.companies.set(id, company);
     return id;
   }
-  
+
   async updateCompany(id: string, company: any): Promise<void> {
     const existing = this.companies.get(id);
     if (!existing) return;
-    
+
     this.companies.set(id, { ...existing, ...company });
   }
-  
+
   // Product operations
   async getProduct(id: string): Promise<any> {
     return this.products.get(id) || null;
   }
-  
+
   async getProductsByCompany(companyId: string): Promise<any[]> {
     return Array.from(this.products.values())
       .filter(product => product.companyId === companyId);
   }
-  
+
   async createProduct(product: any): Promise<string> {
     const id = product.id || `product_${Date.now()}`;
     product.id = id;
     this.products.set(id, product);
     return id;
   }
-  
+
   async updateProduct(id: string, product: any): Promise<void> {
     const existing = this.products.get(id);
     if (!existing) return;
-    
+
     this.products.set(id, { ...existing, ...product });
   }
-  
+
   // Decision operations
   async getDecision(id: string): Promise<any> {
     return this.decisions.get(id) || null;
   }
-  
+
   async getDecisionsByCompany(companyId: string, period?: number): Promise<any[]> {
     let decisions = Array.from(this.decisions.values())
       .filter(decision => decision.companyId === companyId);
-    
+
     if (period !== undefined) {
       decisions = decisions.filter(decision => decision.period === period);
     }
-    
+
     return decisions;
   }
-  
+
   async createDecision(decision: any): Promise<string> {
     const id = decision.id || `decision_${Date.now()}`;
     decision.id = id;
     this.decisions.set(id, decision);
     return id;
   }
-  
+
   async updateDecision(id: string, decision: any): Promise<void> {
     const existing = this.decisions.get(id);
     if (!existing) return;
-    
+
     this.decisions.set(id, { ...existing, ...decision });
   }
-  
+
   // Market conditions operations
   async getMarketConditions(simulationId: string, period: number): Promise<any> {
     const key = `${simulationId}_${period}`;
     return this.marketConditions.get(key) || null;
   }
-  
+
   async createMarketConditions(marketConditions: any): Promise<string> {
     const id = marketConditions.id || `market_${Date.now()}`;
     marketConditions.id = id;
@@ -681,19 +706,19 @@ export class MockDatabaseService implements DatabaseService {
     this.marketConditions.set(key, marketConditions);
     return id;
   }
-  
+
   // Performance results operations
   async getPerformanceResults(companyId: string, period: number): Promise<any> {
     const key = `${companyId}_${period}`;
     return this.performanceResults.get(key) || null;
   }
-  
+
   async getPerformanceHistory(companyId: string): Promise<any[]> {
     return Array.from(this.performanceResults.values())
       .filter(result => result.companyId === companyId)
       .sort((a, b) => a.period - b.period);
   }
-  
+
   async createPerformanceResults(results: any): Promise<string> {
     const id = results.id || `perf_${Date.now()}`;
     results.id = id;
@@ -701,19 +726,19 @@ export class MockDatabaseService implements DatabaseService {
     this.performanceResults.set(key, results);
     return id;
   }
-  
+
   // Product performance operations
   async getProductPerformance(productId: string, period: number): Promise<any> {
     const key = `${productId}_${period}`;
     return this.productPerformance.get(key) || null;
   }
-  
+
   async getProductPerformanceHistory(productId: string): Promise<any[]> {
     return Array.from(this.productPerformance.values())
       .filter(perf => perf.productId === productId)
       .sort((a, b) => a.period - b.period);
   }
-  
+
   async createProductPerformance(performance: any): Promise<string> {
     const id = performance.id || `prod_perf_${Date.now()}`;
     performance.id = id;
@@ -721,47 +746,47 @@ export class MockDatabaseService implements DatabaseService {
     this.productPerformance.set(key, performance);
     return id;
   }
-  
+
   // Event operations
   async getEvents(simulationId: string, period?: number): Promise<any[]> {
     let events = Array.from(this.events.values())
       .filter(event => event.simulationId === simulationId);
-    
+
     if (period !== undefined) {
       events = events.filter(event => event.period === period);
     }
-    
+
     return events;
   }
-  
+
   async createEvent(event: any): Promise<string> {
     const id = event.id || `event_${Date.now()}`;
     event.id = id;
     this.events.set(id, event);
     return id;
   }
-  
+
   // User operations
   async getUser(id: string): Promise<any> {
     return this.users.get(id) || null;
   }
-  
+
   async getUserByEmail(email: string): Promise<any> {
     return Array.from(this.users.values())
       .find(user => user.email === email) || null;
   }
-  
+
   async createUser(user: any): Promise<string> {
     const id = user.id || `user_${Date.now()}`;
     user.id = id;
     this.users.set(id, user);
     return id;
   }
-  
+
   async updateUser(id: string, user: any): Promise<void> {
     const existing = this.users.get(id);
     if (!existing) return;
-    
+
     this.users.set(id, { ...existing, ...user });
   }
 }
@@ -771,6 +796,6 @@ export function createDatabaseService(db?: D1Database): DatabaseService {
   if (db) {
     return new D1DatabaseService(db);
   }
-  
+
   return new MockDatabaseService();
 }

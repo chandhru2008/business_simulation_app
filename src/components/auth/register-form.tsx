@@ -9,12 +9,14 @@ interface RegisterFormProps {
 }
 
 export function RegisterForm({ onSuccess, onLoginClick }: RegisterFormProps) {
-  const { register, error, loading } = useAuth();
+  const { register, error, loading, setError } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
+
+  setError(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

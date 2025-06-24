@@ -1,12 +1,26 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Sidebar, SidebarLogo, SidebarNav, SidebarNavGroup, SidebarNavItem, SidebarFooter } from '../ui/sidebar';
 import { Header } from '../ui/header';
 import { Layout } from '../ui/layout';
 import { Button } from '../ui/button';
+import { useAuth, User } from '@/lib/auth-context';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const [currentPeriod, setCurrentPeriod] = React.useState(0);
   const [currentPage, setCurrentPage] = React.useState('dashboard');
+  const [userData, setUserData] = useState<User>()
+  const { user, logout } = useAuth();
+
+  async function handleLogout(){
+    await logout();
+  }
+
+  useEffect(() => {
+    if(user){
+      setUserData(user);
+    }
+  }, [user])
+console.log(userData)
 
   return (
     <Layout
@@ -23,8 +37,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
           <SidebarNav>
             <SidebarNavGroup title="Main">
-              <SidebarNavItem 
-                href="/dashboard" 
+              <SidebarNavItem
+                href="/dashboard"
                 active={currentPage === 'dashboard'}
                 icon={
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
@@ -37,8 +51,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               >
                 Dashboard
               </SidebarNavItem>
-              <SidebarNavItem 
-                href="/performance" 
+              <SidebarNavItem
+                href="/performance"
                 active={currentPage === 'performance'}
                 icon={
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
@@ -50,8 +64,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               >
                 Performance
               </SidebarNavItem>
-              <SidebarNavItem 
-                href="/market" 
+              <SidebarNavItem
+                href="/market"
                 active={currentPage === 'market'}
                 icon={
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
@@ -65,8 +79,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </SidebarNavGroup>
 
             <SidebarNavGroup title="Management">
-              <SidebarNavItem 
-                href="/human-resources" 
+              <SidebarNavItem
+                href="/human-resources"
                 active={currentPage === 'human-resources'}
                 icon={
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
@@ -79,8 +93,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               >
                 Human Resources
               </SidebarNavItem>
-              <SidebarNavItem 
-                href="/marketing" 
+              <SidebarNavItem
+                href="/marketing"
                 active={currentPage === 'marketing'}
                 icon={
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
@@ -91,8 +105,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               >
                 Marketing
               </SidebarNavItem>
-              <SidebarNavItem 
-                href="/production" 
+              <SidebarNavItem
+                href="/production"
                 active={currentPage === 'production'}
                 icon={
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
@@ -103,8 +117,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               >
                 Production
               </SidebarNavItem>
-              <SidebarNavItem 
-                href="/finance" 
+              <SidebarNavItem
+                href="/finance"
                 active={currentPage === 'finance'}
                 icon={
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
@@ -115,8 +129,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               >
                 Finance
               </SidebarNavItem>
-              <SidebarNavItem 
-                href="/research" 
+              <SidebarNavItem
+                href="/research"
                 active={currentPage === 'research'}
                 icon={
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
@@ -129,8 +143,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </SidebarNavGroup>
 
             <SidebarNavGroup title="Products">
-              <SidebarNavItem 
-                href="/products" 
+              <SidebarNavItem
+                href="/products"
                 active={currentPage === 'products'}
                 icon={
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
@@ -142,8 +156,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               >
                 Product Catalog
               </SidebarNavItem>
-              <SidebarNavItem 
-                href="/products/new" 
+              <SidebarNavItem
+                href="/products/new"
                 active={currentPage === 'new-product'}
                 icon={
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
@@ -161,11 +175,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <SidebarFooter>
             <div className="flex items-center">
               <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-semibold mr-3">
-                JD
+                {userData?.name[0]}
               </div>
               <div>
-                <div className="font-medium text-white">John Doe</div>
-                <div className="text-xs text-gray-400">CEO</div>
+                <div className="font-medium text-white">{userData?.name}</div>
+                <div className="text-xs text-gray-400">{userData?.role}</div>
               </div>
             </div>
           </SidebarFooter>
@@ -185,6 +199,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 onClick={() => setCurrentPeriod(currentPeriod + 1)}
               >
                 Advance to Next Period
+              </Button>
+              <Button variant='primary' onClick={() => handleLogout()} >
+                Log out
               </Button>
             </>
           }

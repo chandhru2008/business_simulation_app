@@ -1,6 +1,6 @@
 import { createRequire as topLevelCreateRequire } from 'module';const require = topLevelCreateRequire(import.meta.url);import bannerUrl from 'url';const __dirname = bannerUrl.fileURLToPath(new URL('.', import.meta.url));
 
-// node_modules/.pnpm/@opennextjs+aws@https+++pkg.pr.new+@opennextjs+aws@704/node_modules/@opennextjs/aws/dist/utils/error.js
+// node_modules/@opennextjs/aws/dist/utils/error.js
 var IgnorableError = class extends Error {
   __openNextInternal = true;
   canIgnore = true;
@@ -20,7 +20,7 @@ var RecoverableError = class extends Error {
   }
 };
 
-// node_modules/.pnpm/@opennextjs+cloudflare@0.3.10_wrangler@3.114.2_@cloudflare+workers-types@4.20250317.0_/node_modules/@opennextjs/cloudflare/dist/api/get-cloudflare-context.js
+// node_modules/@opennextjs/cloudflare/dist/api/get-cloudflare-context.js
 var cloudflareContextSymbol = Symbol.for("__cloudflare-context__");
 async function getCloudflareContext() {
   const global = globalThis;
@@ -51,7 +51,7 @@ async function getCloudflareContextInNextDev() {
   return global[cloudflareContextInNextDevSymbol];
 }
 
-// node_modules/.pnpm/@opennextjs+cloudflare@0.3.10_wrangler@3.114.2_@cloudflare+workers-types@4.20250317.0_/node_modules/@opennextjs/cloudflare/dist/api/kvCache.js
+// node_modules/@opennextjs/cloudflare/dist/api/kvCache.js
 var CACHE_ASSET_DIR = "cnd-cgi/_next_cache";
 var STATUS_DELETED = 1;
 var Cache = class {

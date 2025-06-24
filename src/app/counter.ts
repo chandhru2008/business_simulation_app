@@ -28,7 +28,7 @@ export async function incrementAndLog() {
   } as { count: number; recentAccess: { accessed_at: string }[] }
 }
 
-// 获取当前计数和最近访问
+
 export async function getStats() {
   const cf = await getCloudflareContext()
   const { results: count } = await cf.env.DB.prepare('SELECT value FROM counters WHERE name = ?')
