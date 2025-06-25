@@ -8,8 +8,8 @@ export interface SimulationState {
   createdBy: string;
   createdAt: string;
   updatedAt: string;
-  companies: Company[];
-  products: Product[];
+  companies?: Company[];
+  products?: Product[];
   decisions: Decision[];
   marketConditions: MarketConditions[];
   performanceResults: PerformanceResults[];
@@ -20,6 +20,7 @@ export interface SimulationState {
 export interface Company {
   id: string;
   simulationId: string;
+  simulationName : string;
   userId: string;
   name: string;
   description: string;
@@ -37,6 +38,7 @@ export interface Company {
 export interface Product {
   id: string;
   companyId: string;
+  companyName : string;
   name: string;
   description: string;
   category: string;

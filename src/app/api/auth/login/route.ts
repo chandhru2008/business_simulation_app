@@ -19,7 +19,6 @@ export async function POST(req: NextRequest) {
         const isCorrectPassword = await bcrypt.compare(password, user.password_hash);
         
         if (!user || !isCorrectPassword) {
-            console.log('Password is incorrect');
             return NextResponse.json({ message: 'Invalid email or password' }, { status: 401 });
         }
 
