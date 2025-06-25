@@ -4,21 +4,21 @@ import { useDecisionSubmission } from '../simulation/use-decision-submission';
 import { useSimulationData } from '../simulation/use-simulation-data';
 
 export function Dashboard() {
-  const {  userCompany, companyProducts, advancePeriod, loading, error } = useSimulation();
+  const { userCompany, companyProducts, advancePeriod, loading, error, simulation } = useSimulation();
   const { getCompanyPerformance, getMarketConditions, getMarketEvents, getCurrentPeriod } = useSimulationData();
   const { submitProductDevelopment, submitProduction, submitMarketing, submitPricing } = useDecisionSubmission();
-  
+
   // Get current period and performance data
   const currentPeriod = getCurrentPeriod();
   const performance = getCompanyPerformance();
   const marketConditions = getMarketConditions();
   const events = getMarketEvents(currentPeriod);
-  
+
   // Handle advance period
   const handleAdvancePeriod = () => {
     advancePeriod();
   };
-  
+
   // Handle production decision
   const handleProductionDecision = (productId: string, volume: number) => {
     submitProduction({
@@ -26,7 +26,7 @@ export function Dashboard() {
       productionVolume: volume
     });
   };
-  
+
   // Handle pricing decision
   const handlePricingDecision = (productId: string, price: number) => {
     submitPricing({
@@ -34,7 +34,7 @@ export function Dashboard() {
       price
     });
   };
-  
+
   // Handle marketing decision
   const handleMarketingDecision = (productId: string, budget: number) => {
     submitMarketing({
@@ -42,7 +42,7 @@ export function Dashboard() {
       budget
     });
   };
-  
+
   // Handle new product development
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleNewProduct = (data: any) => {
@@ -51,7 +51,7 @@ export function Dashboard() {
       ...data
     });
   };
-  
+
   if (loading) {
     return (
       <div className="p-6">
@@ -59,7 +59,7 @@ export function Dashboard() {
       </div>
     );
   }
-  
+
   if (error) {
     return (
       <div className="p-6">
@@ -68,7 +68,13 @@ export function Dashboard() {
       </div>
     );
   }
-  
+
+  if (!simulation) {
+    return (
+      <div></div>
+    )
+  }
+
   if (!userCompany) {
     return (
       <div className="p-6">
@@ -77,7 +83,9 @@ export function Dashboard() {
       </div>
     );
   }
-  
+
+
+
   return (
     <div className="p-6 text-black">
       <div className="flex justify-between items-center mb-6">
@@ -92,7 +100,7 @@ export function Dashboard() {
           Advance to Next Period
         </button>
       </div>
-      
+
       {/* Financial Overview */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">
         <h2 className="text-xl font-semibold mb-4">Financial Overview</h2>
@@ -110,7 +118,7 @@ export function Dashboard() {
             <p className="text-2xl font-bold">${userCompany.totalLiabilities.toLocaleString()}</p>
           </div>
         </div>
-        
+
         {performance && (
           <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="bg-gray-50 p-4 rounded-md">
@@ -134,7 +142,7 @@ export function Dashboard() {
           </div>
         )}
       </div>
-      
+
       {/* Products */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">
         <h2 className="text-xl font-semibold mb-4">Products</h2>
@@ -175,11 +183,10 @@ export function Dashboard() {
                     {product.category.charAt(0).toUpperCase() + product.category.slice(1)}
                   </td>
                   <td className="py-2 px-4 border-b border-gray-200">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      product.status === 'active' ? 'bg-green-100 text-green-800' : 
-                      product.status === 'development' ? 'bg-yellow-100 text-yellow-800' : 
-                      'bg-red-100 text-red-800'
-                    }`}>
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${product.status === 'active' ? 'bg-green-100 text-green-800' :
+                        product.status === 'development' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-red-100 text-red-800'
+                      }`}>
                       {product.status.charAt(0).toUpperCase() + product.status.slice(1)}
                     </span>
                   </td>
@@ -217,7 +224,7 @@ export function Dashboard() {
             </tbody>
           </table>
         </div>
-        
+
         <div className="mt-4">
           <button
             onClick={() => handleNewProduct({
@@ -239,11 +246,11 @@ export function Dashboard() {
           </button>
         </div>
       </div>
-      
+
       {/* Market Information */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">
         <h2 className="text-xl font-semibold mb-4">Market Information</h2>
-        
+
         {marketConditions && (
           <div className="mb-6">
             <h3 className="text-lg font-medium mb-2">Market Conditions</h3>
@@ -263,7 +270,7 @@ export function Dashboard() {
             </div>
           </div>
         )}
-        
+
         {events.length > 0 && (
           <div>
             <h3 className="text-lg font-medium mb-2">Market Events</h3>

@@ -3,7 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    const data = req.headers.get('x-user')
+    const data = req.headers.get('x-user');
+    console.log(data)
     if(!data){
       throw new Error ('User details does not seted in Header');
     }

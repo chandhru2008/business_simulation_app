@@ -7,9 +7,11 @@ export interface DatabaseService {
   getAllSimulations(): Promise<any>
   createSimulation(simulation: any): Promise<string>;
   updateSimulation(id: string, simulation: any): Promise<void>;
+  getSimulationByName(simulationName: string): Promise<any>
 
   // Company operations
   getCompany(id: string): Promise<any>;
+  getCompanyByName(name: string): Promise<any>;
   getCompaniesBySimulation(simulationId: string): Promise<any[]>;
   createCompany(company: any): Promise<string>;
   updateCompany(id: string, company: any): Promise<void>;
@@ -64,7 +66,6 @@ export class D1DatabaseService implements DatabaseService {
     const result = await this.db.prepare(
       'SELECT * FROM simulations WHERE id = ?'
     ).bind(id).first();
-    console.log(result)
     return result;
   }
 
@@ -77,11 +78,17 @@ export class D1DatabaseService implements DatabaseService {
     return result.results;
   }
 
+  async getSimulationByName(simulationName: string): Promise<any> {
+    const result = this.db.prepare(
+      'SELECT * FROM simulations WHERE name = ?'
+    ).bind(simulationName).first();
+    return result
+  }
+
   async getAllSimulations(): Promise<any> {
     const result = this.db.prepare(
       'SELECT * FROM simulations'
     ).all()
-    console.log(result);
     return result;
   }
 
@@ -104,8 +111,6 @@ export class D1DatabaseService implements DatabaseService {
       simulation.createdAt,
       simulation.updatedAt
     ).run();
-
-    console.log('id', id);
     return id;
   }
 
@@ -137,6 +142,17 @@ export class D1DatabaseService implements DatabaseService {
     ).bind(id).first();
 
     return result;
+  }
+
+  async getCompanyByName(name: string): Promise<any> {
+
+    console.log('Name : ', name)
+
+    const result = await this.db.prepare(
+      'SELECT * FROM companies WHERE name = ?'
+    ).bind(name).first();
+
+    return result!.id;
   }
 
   async getCompaniesBySimulation(simulationId: string): Promise<any[]> {
@@ -312,7 +328,7 @@ export class D1DatabaseService implements DatabaseService {
 
   async getDecisionsByCompany(companyId: string, period?: number): Promise<any[]> {
     let query = 'SELECT * FROM decisions WHERE company_id = ?';
-    let params = [companyId];
+    const params: any = [companyId];
 
     if (period !== undefined) {
       query += ' AND period = ?';
@@ -487,7 +503,7 @@ export class D1DatabaseService implements DatabaseService {
   // Event operations
   async getEvents(simulationId: string, period?: number): Promise<any[]> {
     let query = 'SELECT * FROM events WHERE simulation_id = ?';
-    let params = [simulationId];
+    const params: any = [simulationId];
 
     if (period !== undefined) {
       query += ' AND period = ?';
@@ -583,6 +599,7 @@ export class D1DatabaseService implements DatabaseService {
 
 // Create a mock database service for development
 export class MockDatabaseService implements DatabaseService {
+
 
   private simulations: Map<string, any> = new Map();
   private companies: Map<string, any> = new Map();

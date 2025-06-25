@@ -17,9 +17,6 @@ export async function POST(req: NextRequest) {
 
         const existingUser = await db.getUserByEmail(email);
 
-        console.log(existingUser);
-
-
         if (existingUser) {
             return NextResponse.json({ message: 'Email already in use' }, { status: 409 });
         }

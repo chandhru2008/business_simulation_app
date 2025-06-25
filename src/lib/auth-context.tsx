@@ -183,7 +183,6 @@
 'use client';
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useDatabase } from './database-context';
-import { useRouter } from 'next/navigation';
 
 // Define user type
 export interface User {

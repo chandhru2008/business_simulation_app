@@ -22,7 +22,7 @@ export function AuthPage({ onAuthSuccess }: AuthPageProps) {
           <h1 className="text-center text-3xl font-extrabold text-gray-900">
             Business Simulation
           </h1>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-black">
             Make strategic decisions and grow your virtual company
           </p>
         </div>
